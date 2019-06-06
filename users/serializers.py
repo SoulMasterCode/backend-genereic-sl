@@ -10,9 +10,6 @@ from orders.models import Profile_company
 # Data Base Models
 from django.db import models
 
-# Serializers
-# from orders import serializers as orders_serializers
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -75,12 +72,15 @@ class ProfileViewSerializer(serializers.ModelSerializer):
         fields = ('pk', 'user', 'telephone', 'picture', 'created', 'modified', 'user')
 
 class LoginSerializer(serializers.ModelSerializer):
+    # Serializers
+    from orders import serializers as orders_serializers
+
     password = serializers.CharField(required=False, allow_blank=True)
     username = serializers.CharField(required=False, allow_blank=True)
     profile_type = serializers.BooleanField()
     key = serializers.CharField(required=False, allow_blank=True)
     customer_profile = ProfileViewSerializer(many=False, read_only=True)
-    # company_profile = orders_serializers.ProfileCompnayViewSerializer(many=False, read_only=True)
+    company_profile = orders_serializers.ProfileCompnayViewSerializer(many=False, read_only=True)
     # token_fields = TokenSerializer(many=False, read_only=True)
     class Meta:
         model = Token
@@ -106,14 +106,16 @@ class LoginSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Contraseña Incorrecta papu")
             if profile_type:
                 customer_profile = Profile.objects.get(user=login_user)
+                data["customer_profile"] = customer_profile
             else:
                 company_profile = Profile_company.objects.get(user=login_user)
+                data["company_profile"] = company_profile
 
 
         # Formateo de la respuesta
         token = Token.objects.get_or_create(user=login_user)
         data["key"] = token[0]
-        data["customer_profile"] = customer_profile
+        
         del data["username"]
         del data["password"]
         

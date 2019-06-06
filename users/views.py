@@ -24,6 +24,9 @@ from rest_framework.permissions import IsAuthenticated
 # User Serializer
 
 class UserList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+    
     # Lista usuarios
     def get(self, request, format=None):
         listUser = User.objects.all()
@@ -43,6 +46,8 @@ class UserList(APIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class UserDetail(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self, pk):
         try:

@@ -22,6 +22,9 @@ from rest_framework.permissions import IsAuthenticated
 # Orders Views
 
 class CategoryList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+
     # Lista de categorias
     def get(self, request, format=None):
         categoryList = Category.objects.all()
@@ -37,6 +40,8 @@ class CategoryList(APIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class CategoryDetail(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self, pk):
         try:
@@ -63,6 +68,9 @@ class CategoryDetail(APIView):
         return Response(status.HTTP_204_NO_CONTENT)
 
 class ProfileComapanyList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+
     # Lista de categorias
     def get(self, request, format=None):
         profileComapanyList = Profile_company.objects.all()
@@ -78,6 +86,8 @@ class ProfileComapanyList(APIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class ProfileComapanyDetail(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self, pk):
         try:
@@ -104,6 +114,9 @@ class ProfileComapanyDetail(APIView):
         return Response(status.HTTP_204_NO_CONTENT)
 
 class ProductList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+
     # Lista de categorias
     def get(self, request, format=None):
         productList = Product.objects.all()
@@ -119,6 +132,8 @@ class ProductList(APIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class ProductDetail(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self, pk):
         try:
@@ -145,6 +160,9 @@ class ProductDetail(APIView):
         return Response(status.HTTP_204_NO_CONTENT)
 
 class OrderList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+
     # Lista de categorias
     def get(self, request, format=None):
         orderList = Order.objects.all()
@@ -160,6 +178,8 @@ class OrderList(APIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class OrderDetail(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self, pk):
         try:
@@ -186,6 +206,9 @@ class OrderDetail(APIView):
         return Response(status.HTTP_204_NO_CONTENT)
 
 class ProductHasOrderList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+
     # Lista de categorias
     def get(self, request, format=None):
         productHasOrderList = Product_Has_Order.objects.all()
@@ -201,6 +224,8 @@ class ProductHasOrderList(APIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class ProductHasOrderDetail(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self, pk):
         try:
