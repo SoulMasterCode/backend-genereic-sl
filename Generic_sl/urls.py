@@ -36,6 +36,8 @@ urlpatterns = [
     path('Profiles/', views.ProfileList.as_view()),
     path('Profiles/<int:pk>', views.ProfileDetail.as_view()),
     path('login/', views.LoginView.as_view()),
+    path('user_signin/', views.UserSignIn.as_view()),
+    path('profile_signin/', views.ProfileSignIn.as_view()),
     # Orders Urls
     path('Categories/', order_views.CategoryList.as_view()),
     path('Categories/<int:pk>', order_views.CategoryDetail.as_view()),
@@ -47,4 +49,5 @@ urlpatterns = [
     path('Orders/<int:pk>', order_views.OrderDetail.as_view()),
     path('Product_Has_Orders/', order_views.ProductHasOrderList.as_view()),
     path('Product_Has_Orders/<int:pk>', order_views.ProductHasOrderDetail.as_view()),
+    path('profile_company_signin/', order_views.ProfileComapanySignIn.as_view()),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

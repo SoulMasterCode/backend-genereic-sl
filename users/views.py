@@ -23,17 +23,8 @@ from rest_framework.permissions import IsAuthenticated
 
 # User Serializer
 
-class UserList(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated, )
-    
-    # Lista usuarios
-    def get(self, request, format=None):
-        listUser = User.objects.all()
-        serializer = UserSerializer(listUser, many=True)
-        return Response(serializer.data)
-
-    # Crear Nuevo Usuario
+class UserSignIn(APIView):
+# Crear Nuevo Usuario
     def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -44,6 +35,16 @@ class UserList(APIView):
             # Fin de la creacion del token
             return Response(serializer.data, status.HTTP_201_CREATED)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+class UserList(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+    
+    # Lista usuarios
+    def get(self, request, format=None):
+        listUser = User.objects.all()
+        serializer = UserSerializer(listUser, many=True)
+        return Response(serializer.data)
     
 class UserDetail(APIView):
     authentication_classes = (TokenAuthentication,)
@@ -74,6 +75,16 @@ class UserDetail(APIView):
         user.delete()
         return Response(status.HTTP_204_NO_CONTENT)
 
+class ProfileSignIn(APIView):
+    # Crear Nuevo Perfil
+    def post(self, request, format=None):
+        serializer = ProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+
 # Profile Serializer
 class ProfileList(APIView):
     authentication_classes = (TokenAuthentication,)
@@ -83,14 +94,6 @@ class ProfileList(APIView):
         listProfile = Profile.objects.all()
         serializer = ProfileViewSerializer(listProfile, many=True)
         return Response(serializer.data)
-
-    # Crear Nuevo Usuario
-    def post(self, request, format=None):
-        serializer = ProfileSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status.HTTP_201_CREATED)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class ProfileDetail(APIView):
     authentication_classes = (TokenAuthentication,)

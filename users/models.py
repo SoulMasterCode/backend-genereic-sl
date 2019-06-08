@@ -8,6 +8,7 @@ class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     telephone = models.CharField(max_length=10)
     picture = models.ImageField(upload_to='profile/pictures', blank=True, null=True)
+    is_active = models.BooleanField()
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 

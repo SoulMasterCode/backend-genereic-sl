@@ -27,22 +27,13 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-# class UserAllSerializer(serializers.ModelSerializer):
+# class RegisterUserSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = User
-#         fields = ('pk','username','first_name', 'last_name', 'password', 'email')
-    
-#     def create(self, validated_data):
-#         return User.objects.create(**validated_data)
+#         fields = ('pk', 'username', 'email', 'password', 'first_name', 'last_name')
 
-#     def update(self, instance, validated_data):
-#         instance.username = validated_data.get('username', instance.username)
-#         instance.first_name = validated_data.get('first_name', instance.first_name)
-#         instance.email = validated_data.get('email', instance.email)
-#         instance.last_name = validated_data.get('last_name', instance.last_name)
-#         instance.password = validated_data.get('password', instance.password)
-#         instance.save()
-#         return instance
+#     def create(self, validated_data):
+#         return User.objects.create_user(**validated_data)
 
 class TokenSerializer(serializers.ModelSerializer):
     user = UserSerializer(many = False, read_only=True)
@@ -53,23 +44,23 @@ class TokenSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('pk', 'user', 'telephone', 'picture', 'created', 'modified')
+        fields = ('pk', 'user', 'telephone', 'picture', 'created', 'modified', 'is_active')
 
-        def create(self, validated_data):
-            return Profile.objects.create(**validated_data)
+    def create(self, validated_data):
+        return Profile.objects.create(**validated_data)
 
-        def update(self, instance, validated_data):
-            instance.user = validated_data.get('user', instance.Profile.user)
-            instance.telephone = validated_data.get('telephone', instance.Profile.telephone)
-            instance.picture = validated_data.get('picture', instance.Profile.picture)
-            instance.save()
-            return instance
+    def update(self, instance, validated_data):
+        instance.user = validated_data.get('user', instance.Profile.user)
+        instance.telephone = validated_data.get('telephone', instance.Profile.telephone)
+        instance.picture = validated_data.get('picture', instance.Profile.picture)
+        instance.save()
+        return instance
 
 class ProfileViewSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, read_only=True)
     class Meta:
         model = Profile
-        fields = ('pk', 'user', 'telephone', 'picture', 'created', 'modified', 'user')
+        fields = ('pk', 'user', 'is_active' ,'telephone', 'picture', 'created', 'modified', 'user')
 
 class LoginSerializer(serializers.ModelSerializer):
     # Serializers
@@ -120,3 +111,4 @@ class LoginSerializer(serializers.ModelSerializer):
         del data["password"]
         
         return data
+

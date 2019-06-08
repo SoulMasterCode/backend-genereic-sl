@@ -67,6 +67,16 @@ class CategoryDetail(APIView):
         category.delete()
         return Response(status.HTTP_204_NO_CONTENT)
 
+class ProfileComapanySignIn(APIView):
+     # Crear Nuevo Perfil de empresa
+    def post(self, request, format=None):
+        serializer = ProfileCompnaySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+
 class ProfileComapanyList(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, )
@@ -76,14 +86,6 @@ class ProfileComapanyList(APIView):
         profileComapanyList = Profile_company.objects.all()
         serializer = ProfileCompnayViewSerializer(profileComapanyList, many=True)
         return Response(serializer.data)
-
-    # Crear Nuevo Usuario
-    def post(self, request, format=None):
-        serializer = ProfileCompnaySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status.HTTP_201_CREATED)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
 class ProfileComapanyDetail(APIView):
     authentication_classes = (TokenAuthentication,)
