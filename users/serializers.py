@@ -9,6 +9,7 @@ from orders.models import Profile_company
 
 # Data Base Models
 from django.db import models
+from rest_framework.response import Response
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,7 +17,14 @@ class UserSerializer(serializers.ModelSerializer):
         fields=('pk','username', 'email', 'password','first_name','last_name')
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        from orders.models import Profile_company
+
+        user = User.objects.create_user(**validated_data)
+        profile = Profile.objects.create(user=user)
+        profile.save()
+        profile_company = Profile_company.objects.create(user=user)
+        profile_company.save()
+        return user
 
     def update(self, instance, validated_data):
         instance.username = validated_data.get('username', instance.username)
@@ -26,6 +34,9 @@ class UserSerializer(serializers.ModelSerializer):
         instance.password = validated_data.get('password', instance.password)
         instance.save()
         return instance
+
+
+
 
 # class RegisterUserSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -66,18 +77,24 @@ class LoginSerializer(serializers.ModelSerializer):
     # Serializers
     from orders import serializers as orders_serializers
 
+    # Parametros del login
     password = serializers.CharField(required=False, allow_blank=True)
     username = serializers.CharField(required=False, allow_blank=True)
     profile_type = serializers.BooleanField()
     key = serializers.CharField(required=False, allow_blank=True)
+
+    # Serializadores de los perfiles
     customer_profile = ProfileViewSerializer(many=False, read_only=True)
     company_profile = orders_serializers.ProfileCompnayViewSerializer(many=False, read_only=True)
     # token_fields = TokenSerializer(many=False, read_only=True)
     class Meta:
+        # Se usara el modelo Token para ahorarnos algunos parametros
         model = Token
+        #Agregando los campos nesesarios para el login serializer
         fields = ('username', 'password', 'key', 'profile_type', 'customer_profile', 'company_profile')
         extra_kwards = {'password':{'write_only':True}}
     
+    # sobreescribiendo el metodo validate para hacer las validaciones manualmente
     def validate(self, data):
         username = data.get("username")
         password = data.get("password")

@@ -25,7 +25,7 @@ SECRET_KEY = '(i2c=$u&r=j2*=l49o(lx+k7#pvo$9i80^0borp7nyyx^q$b=='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'Generic_sl.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dbgeneric',
+        'NAME': 'db_generic',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': 'localhost',

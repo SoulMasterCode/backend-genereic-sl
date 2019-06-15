@@ -16,17 +16,17 @@ class Category(models.Model):
 
 class Profile_company(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    company_name = models.CharField(max_length=100)
-    telephone = models.CharField(max_length=10)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    company_name = models.CharField(max_length=100, blank=True)
+    telephone = models.CharField(max_length=10, blank=True)
     picture = models.ImageField(upload_to ='company/pictures', null= True, blank= True)
-    location = models.DecimalField(max_digits=19, decimal_places=10)
+    location = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
     rfc = models.CharField(max_length=15, blank=True, null=True)
-    addres = models.CharField(max_length=250)
-    is_active = models.BooleanField()
+    addres = models.CharField(max_length=250, blank=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.company_name
+        return self.user
 
 class Product(models.Model):
     profile_company = models.ForeignKey(Profile_company, on_delete=models.CASCADE)
