@@ -21,8 +21,6 @@ from rest_framework.permissions import IsAuthenticated
 
 # User Views
 
-# User Serializer
-
 class UserSignIn(APIView):
 # Crear Nuevo Usuario
     def post(self, request, format=None):
@@ -50,18 +48,20 @@ class UserDetail(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, )
 
+    #funcion auxiliar obtiene el registro con la llave indicada
     def get_object(self, pk):
         try:
             return User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise Http404
-    
+    #retorna todos los datos del usuario
     def get(self, request, pk, format=None):
         user = self.get_object(pk)
         token = Token.objects.get(user=user)
         serializer = TokenSerializer(token)
         return Response(serializer.data, status.HTTP_200_OK)
     
+    #Actualiza los datos del usuario y los retorna
     def put(self, request, pk, format=None):
         user = self.get_object(pk)
         serializer = UserSerializer(user, data= request.data)
@@ -70,6 +70,7 @@ class UserDetail(APIView):
             return Response(serializer.data, status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
+    #Elimina al usuario
     def delete(self, request, pk, format=None):
         user = self.get_object(pk)
         user.delete()
@@ -89,7 +90,7 @@ class ProfileSignIn(APIView):
 class ProfileList(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, )
-    # Lista usuarios
+    # Lista Perfiles
     def get(self, request, format=None):
         listProfile = Profile.objects.all()
         serializer = ProfileViewSerializer(listProfile, many=True)
@@ -99,17 +100,20 @@ class ProfileDetail(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, )
 
+    #funcion auxiliar,regresa el registro perfil con la llave indicada
     def get_object(self, pk):
         try:
             return Profile.objects.get(pk=pk)
         except Profile.DoesNotExist:
             raise Http404
-    
+
+    #Retorna todos los valores del perfil
     def get(self, request, pk, format=None):
         profile = self.get_object(pk)
         serializer = ProfileViewSerializer(profile)
         return Response(serializer.data, status.HTTP_200_OK)
     
+    #actualiza los datos del perfil y los devuelve ya actualizados
     def put(self, request, pk, format=None):
         profile = self.get_object(pk)
         serializer = ProfileSerializer(profile, data= request.data)
@@ -119,12 +123,16 @@ class ProfileDetail(APIView):
             return Response(serializer.data, status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
     
+    #elimina el perfil de usuario
     def delete(self, request, pk, format=None):
         profile = self.get_object(pk)
         profile.delete()
         return Response(status.HTTP_204_NO_CONTENT)
 
+
 class LoginView(APIView):
+
+    #Login validacion de los datos que envie el front. Para logueo
     def post(self, request, format=None):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
