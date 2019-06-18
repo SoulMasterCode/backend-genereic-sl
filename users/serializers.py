@@ -1,3 +1,6 @@
+# Django
+from django.contrib.auth import authenticate
+
 # Rest Framework
 from rest_framework import serializers
 
@@ -11,21 +14,26 @@ from orders.models import Profile_company
 from django.db import models
 from rest_framework.response import Response
 
+# Los serielizers con View en su nombre son para visualizar y los que no son Serializers para los protocolos Post y Put   
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
+        # Se usara el modelo User
         model = User
-        fields=('pk','username', 'email', 'password','first_name','last_name')
+        fields=('pk','username','password', 'email','first_name','last_name')
 
+    # Sobrescribiendo el metodo create
     def create(self, validated_data):
+        # Orders Models
         from orders.models import Profile_company
 
+        # Creando los perfiles
         user = User.objects.create_user(**validated_data)
-        profile = Profile.objects.create(user=user)
-        profile.save()
-        profile_company = Profile_company.objects.create(user=user)
-        profile_company.save()
+        Profile.objects.create(user=user)
+        Profile_company.objects.create(user=user)
         return user
 
+    # Sobrescribiendo el metodo update para validar los datos
     def update(self, instance, validated_data):
         instance.username = validated_data.get('username', instance.username)
         instance.first_name = validated_data.get('first_name', instance.first_name)
@@ -47,6 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
 #         return User.objects.create_user(**validated_data)
 
 class TokenSerializer(serializers.ModelSerializer):
+    # Serializador anidado de user al mostrar un serializador anidado me permite ver el contenido de este siempre y cuando haya una relasion 
     user = UserSerializer(many = False, read_only=True)
     class Meta:
         model = Token
@@ -55,7 +64,7 @@ class TokenSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('pk', 'user', 'telephone', 'picture', 'created', 'modified', 'is_active')
+        fields = ('pk', 'user', 'telephone', 'created', 'modified', 'is_active')
 
     def create(self, validated_data):
         return Profile.objects.create(**validated_data)
@@ -68,10 +77,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 class ProfileViewSerializer(serializers.ModelSerializer):
+    # Serializador anidado de usuario al mostrar un serializador anidado me permite ver el contenido de este siempre y cuando haya una relasion 
     user = UserSerializer(many=False, read_only=True)
     class Meta:
         model = Profile
-        fields = ('pk', 'user', 'is_active' ,'telephone', 'picture', 'created', 'modified', 'user')
+        fields = ('pk', 'user', 'is_active' ,'telephone', 'created', 'modified', 'user')
 
 class LoginSerializer(serializers.ModelSerializer):
     # Serializers
@@ -96,22 +106,33 @@ class LoginSerializer(serializers.ModelSerializer):
     
     # sobreescribiendo el metodo validate para hacer las validaciones manualmente
     def validate(self, data):
+        # Tomando los parametros del request
         username = data.get("username")
         password = data.get("password")
         profile_type = data.get("profile_type")
+        
+        # Inicializando la variable
         login_user = None
+        # user = authenticate(username=username, password=password)
 
+        # Validando si no esta nulo el username y el password
         if not username or not password:
             raise serializers.ValidationError("El campo usuario/contraseña es requerido animal")
         else:
+            # Se consulta el usuario
             user = User.objects.filter(username=username)
+        # Validando si el usuario existe
         if user.exists():
+            # si existe toma el usuario
             login_user = user.first()
         else:
             raise serializers.ValidationError("No existe el usuario xc")
+        # si existe el usuario realiza las validaciones de la contraseña
         if login_user:
+            # chacando si la contraseña este correcta
             if not login_user.check_password(password):
-                raise serializers.ValidationError("Contraseña Incorrecta papu")
+                raise serializers.ValidationError("Contraseña/Usuario Incorrecta papu")
+            # Dependiendo de que el profile_type es false o true en el json traera los perfiles correspondientes
             if profile_type:
                 customer_profile = Profile.objects.get(user=login_user)
                 data["customer_profile"] = customer_profile
@@ -120,7 +141,7 @@ class LoginSerializer(serializers.ModelSerializer):
                 data["company_profile"] = company_profile
 
 
-        # Formateo de la respuesta
+        # Formateo del json
         token = Token.objects.get_or_create(user=login_user)
         data["key"] = token[0]
         

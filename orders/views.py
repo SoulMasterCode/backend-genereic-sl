@@ -31,7 +31,7 @@ class CategoryList(APIView):
         serializer = CategorySerializer(categoryList, many=True)
         return Response(serializer.data)
 
-    # Crear Nuevo Usuario
+    # Crear Nueva categoria
     def post(self, request, format=None):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():

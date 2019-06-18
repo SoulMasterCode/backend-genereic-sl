@@ -11,6 +11,8 @@ from django.db import models
 #User serializer
 from users import serializers as users_serializer
 
+# Los serielizers con View en su nombre son para visualizar y los que no son Serializers para los protocolos Post y Put    
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -24,11 +26,11 @@ class CategorySerializer(serializers.ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.save()
         return instance
-    
+
 class ProfileCompnaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile_company       
-        fields = ('pk', 'user', 'category',"company_name","telephone","picture","location","rfc","addres","is_active")
+        fields = ('pk', 'user', 'category',"company_name","telephone","location","rfc","addres","is_active")
     
     def create(self, validated_data):
         return Profile_company.objects.create(**validated_data)
@@ -47,11 +49,12 @@ class ProfileCompnaySerializer(serializers.ModelSerializer):
         return instance
 
 class ProfileCompnayViewSerializer(serializers.ModelSerializer):
+    # Serializador anidado de user y category al mostrar un serializador anidado me permite ver el contenido de este siempre y cuando haya una relasion 
     user = users_serializer.UserSerializer(many= False, read_only=True)
     category = CategorySerializer(many=False, read_only=True)
     class Meta:
         model = Profile_company       
-        fields = ('pk', 'user', 'category',"company_name","telephone","picture","location","rfc","addres","is_active")
+        fields = ('pk', 'user', 'category',"company_name","telephone","location","rfc","addres","is_active")
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,6 +75,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return instance
 
 class ProductViewSerializer(serializers.ModelSerializer):
+    # Serializador anidado de ProfileCompnay al mostrar un serializador anidado me permite ver el contenido de este siempre y cuando haya una relasion 
     profile_company = ProfileCompnayViewSerializer(many= False, read_only=True)
     class Meta:
         model = Product       
@@ -96,6 +100,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return instance
 
 class OrderViewSerializer(serializers.ModelSerializer):
+     # Serializador anidado de Profile al mostrar un serializador anidado me permite ver el contenido de este siempre y cuando haya una relasion 
     profile= users_serializer.ProfileViewSerializer(many = False, read_only=True)
     class Meta:
         model = Order       
@@ -118,6 +123,7 @@ class ProductHasOrderSerializer(serializers.ModelSerializer):
         return instance
 
 class ProductHasOrderViewSerializer(serializers.ModelSerializer):
+     # Serializador anidado de Product y Order al mostrar un serializador anidado me permite ver el contenido de este siempre y cuando haya una relasion 
     product = ProductViewSerializer(many = False, read_only=False)
     order = OrderViewSerializer(many=False, read_only=True)
     class Meta:
